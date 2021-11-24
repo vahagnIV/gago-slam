@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(gago_slam)
+project(image_publisher)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -11,10 +11,9 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
   roscpp
 )
-find_package(Eigen3 REQUIRED)
-find_package(orbslam REQUIRED)
-find_package(OpenCV REQUIRED)
 
+find_package(LibGago REQUIRED)
+include_directories(${LibGago_INCLUDE_DIRS})
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -106,7 +105,7 @@ find_package(OpenCV REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES gago_slam
+#  LIBRARIES image_publisher
 #  CATKIN_DEPENDS image_transport roscpp
 #  DEPENDS system_lib
 )
@@ -120,12 +119,11 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
-        ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/gago_slam.cpp
+#   src/${PROJECT_NAME}/image_publisher.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -137,8 +135,8 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
  add_executable(${PROJECT_NAME}_node
-         src/gago_slam_node.cpp
-         src/slam.cpp)
+         src/image_publisher_node.cpp
+         src/camera_watcher.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -151,9 +149,9 @@ include_directories(
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(${PROJECT_NAME}_node
-   ${catkin_LIBRARIES} orbslam
-  ${OpenCV_LIBS}
+target_link_libraries(${PROJECT_NAME}_node
+   ${catkin_LIBRARIES}
+   ${LibGago_LIBRARIES}
  )
 
 #############
@@ -203,7 +201,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_gago_slam.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_image_publisher.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
